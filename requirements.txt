@@ -1,0 +1,4 @@
+bert4keras >= 0.2.5
+tensorflow
+keras
+numpy
