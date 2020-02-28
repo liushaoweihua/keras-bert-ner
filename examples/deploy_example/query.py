@@ -7,8 +7,8 @@ from __future__ import print_function
 
 import sys
 import json
-from termcolor import colored
 import requests
+from termcolor import colored
 
 
 def query(text, url):
