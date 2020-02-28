@@ -1,40 +1,38 @@
+English Version  |  中文版说明
+
 # Keras-Bert-Ner
 
-Keras solution of **Chinese NER task** using **BiLSTM-CRF/BiGRU-CRF/IDCNN-CRF/single-CRF** model with **BERTs** (Google's Pretrained Language Model: supporting **BERT/RoBERTa/ALBERT**).
-
-中文命名实体识别任务下的Keras解决方案，下游模型支持BiLSTM-CRF/BiGRU-CRF/IDCNN-CRF/single-CRF，预训练语言模型采用**BERT系列**（谷歌的预训练语言模型：支持**BERT/RoBERTa/ALBERT**）。
+Keras solution of **Chinese NER task** using **BiLSTM-CRF/BiGRU-CRF/IDCNN-CRF** model with Pretrained Language Model: supporting **BERT/RoBERTa/ALBERT**).
 
 ## Update Logs
 
-**2019.11.14** **bert4keras** is now used as a package as it doesnot change greatly. The **albert model** can only support Google's version now.
+* **2020.02.27** Reconstruct the code of `keras_bert_ner` and remove some redundant files. `bert4keras == 0.2.5` is now integrated as a main part of this project.
 
-**2019.11.04** Fix bugs for wrong result when calculating sentence accuracy and doing prediction.
+* **2019.11.14** `bert4keras` is now used as a package as it does not change greatly. The **albert model** can only support Google's version now.
 
-**2019.11.01** Replace crf_accuracy/crf_loss from keras-contrib with self-defined crf_accuracy/crf_loss to handle masks.
+* **2019.11.04** Fix bugs for wrong result when calculating sentence accuracy and doing prediction.
+
+* **2019.11.01** Replace crf_accuracy/crf_loss from `keras-contrib` with self-defined crf_accuracy/crf_loss to handle **mask tags**.
 
 ## Future Work
 
-~~**Important: The padding item should be mask when calculating CRF Loss, or it will return a wrong loss result. (Crf-loss provided by keras-contrib do not solve this problem).**~~
+* Migrate to tensorflow 2.0.
 
-This project is currently under migration to tensorflow 2.0, which will take a few days if my work is not busy (lol).
+* Add other BERTs models, like Distill_Bert, Tiny_Bert.
 
-## Installation
+## Dependencies
 
-This project can be installed via:
+* flask == 1.1.1
+* keras == 2.3.1
+* numpy == 1.18.1
+* loguru == 0.4.1
+* termcolor == 1.1.0
+* tensorflow == 1.13.1
+* keras_contrib == 2.0.8
 
-```bash
-pip install keras_bert_ner
-```
+## Train Phase
 
-to uninstall:
-
-```bash
-pip uninstall keras_bert_ner
-```
-
-## Training
-
-### Data Format
+> **Data Format**
 
 ```json
 [
@@ -52,186 +50,117 @@ pip uninstall keras_bert_ner
 
 See in `./examples/data/train.txt`, data source: [互联网金融新实体发现](https://www.datafountain.cn/competitions/361)
 
-### Parameters
+> **Parameters**
 
-Simply run `python keras_bert_ner/train/help.py --help` to see the relevant parameters for training a typical NER model. Where you will see as follows: 
-
-```bash
-(nlp) liushaoweihua@ai-server-6:~/jupyterlab/Keras-Bert-Ner$ python keras_bert_ner/train/help.py --help
-usage: help.py [-h] -train_data TRAIN_DATA [-dev_data DEV_DATA]
-               [-save_path SAVE_PATH] [-albert] -bert_config BERT_CONFIG
-               -bert_checkpoint BERT_CHECKPOINT -bert_vocab BERT_VOCAB
-               [-do_eval] [-device_map DEVICE_MAP] [-best_fit]
-               [-max_epochs MAX_EPOCHS]
-               [-early_stop_patience EARLY_STOP_PATIENCE]
-               [-reduce_lr_patience REDUCE_LR_PATIENCE]
-               [-reduce_lr_factor REDUCE_LR_FACTOR] [-hard_epochs HARD_EPOCHS]
-               [-batch_size BATCH_SIZE] [-max_len MAX_LEN]
-               [-learning_rate LEARNING_RATE] [-model_type MODEL_TYPE]
-               [-cell_type CELL_TYPE] [-rnn_units RNN_UNITS]
-               [-rnn_layers RNN_LAYERS] [-cnn_filters CNN_FILTERS]
-               [-cnn_kernel_size CNN_KERNEL_SIZE] [-cnn_blocks CNN_BLOCKS]
-               [-crf_only] [-dropout_rate DROPOUT_RATE]
-```
-
-More precisely: 
+Run `python keras_bert_ner/helper.py train` for quick browse.
 
 ```bash
-Data File Paths:
-  Config the train/dev/test file paths
-  -train_data TRAIN_DATA                     (REQUIRED) Train data path
-  -dev_data DEV_DATA                         (OPTIONAL) Dev data path. Needed when -do_eval=True
-
-
-Model Output Paths:
-  Config the output paths for model
-  -save_path SAVE_PATH                       (OPTIONAL) Model output paths
-
-
-BERT File paths:
-  Config the path, checkpoint and filename of a pretrained or fine-tuned BERT model
-  -albert                                    (OPTIONAL) Whether to use ALBERT model. Default is False
-  -bert_config BERT_CONFIG                   (REQUIRED) bert_config.json
-  -bert_checkpoint BERT_CHECKPOINT           (REQUIRED) bert_model.ckpt
-  -bert_vocab BERT_VOCAB                     (REQUIRED) vocab.txt
-
-
-Action Configs:
-  Config the actions during running
-  -do_eval                                   (OPTIONAL) Evaluation mode. Default is True
-  -device_map DEVICE_MAP                     (OPTIONAL) Use CPU/GPU to train. If use CPU, then 'cpu'. 
-                                             If use GPU, then assign the devices, such as '0'. Default 
-                                             is 'cpu'
-
-
-Train Configs:
-  Config the train params
-  -best_fit                                  (OPTIONAL) Train best model that suits for dev.txt. 
-                                             Default is False
-  -max_epochs MAX_EPOCHS                     (OPTIONAL) Training epochs. Only available when 
-                                             -best_fit=True. Default is 256
-  -early_stop_patience EARLY_STOP_PATIENCE   (OPTIONAL) Early stop patience. Only available when 
-  																					 -best_fit=True. Default is 3
-  -reduce_lr_patience REDUCE_LR_PATIENCE     (OPTIONAL) Reduce learning rate on plateau patience.
-                        										 Only available when -best_fit=True. Default is 2
-  -reduce_lr_factor REDUCE_LR_FACTOR         (OPTIONAL) Reduce learning rate on plateau factor.
-                        										 Only available when -best_fit=True. Default is 0.5
-  -hard_epochs HARD_EPOCHS                   (OPTIONAL) Training epochs. Only available when
-                        										 -best_fit=False. Default is 10
-  -batch_size BATCH_SIZE  									 (OPTIONAL) Batch size. Default is 64
-  -max_len MAX_LEN      										 (OPTIONAL) Max sequence length. Default is 64
-  -learning_rate LEARNING_RATE 							 (OPTIONAL) Initial adam lr. Default is 1e-5
-
-
-Model Configs:
-  Config the model params
-  -model_type MODEL_TYPE                     (OPTIONAL) RNN models or CNN models. Default is rnn
-  -cell_type CELL_TYPE                       (OPTIONAL) Cell types. If model_type='rnn', could be
-                        										 bilstm or bigru. If model_type='cnn', could be idcnn.
-                        										 Default is bilstm
-  -rnn_units RNN_UNITS  										 (OPTIONAL) RNN units. Only available when model_type='rnn'. 
-  																					 Default is 128
-  -rnn_layers RNN_LAYERS										 (OPTIONAL) RNN layers. Only available when model_type='rnn'. 
-  																					 Default is 1
-  -cnn_filters CNN_FILTERS									 (OPTIONAL) CNN filters. Only available when model_type='cnn'. 
-  																					 Default is 128
-  -cnn_kernel_size CNN_KERNEL_SIZE					 (OPTIONAL) CNN filters. Only available when model_type='cnn'.
-                        										 Default is 3
-  -cnn_blocks CNN_BLOCKS										 (OPTIONAL) IDCNN blocks. Only available when model_type='cnn'.
-                        										 Default is 4
-  -crf_only             										 (OPTIONAL) Only use CRF-layers after BERT. Default is False
-  -dropout_rate DROPOUT_RATE								 (OPTIONAL) Dropout rate. Default is 0.0
+(nlp) liushaoweihua@ai-server-8:~/projects/Ner/tools/Keras-Bert-Ner$ python keras_bert_ner/helper.py train
+usage: helper.py [-h] -train_data TRAIN_DATA [-dev_data DEV_DATA]
+                 [-save_path SAVE_PATH] [-albert] -bert_config BERT_CONFIG
+                 -bert_checkpoint BERT_CHECKPOINT -bert_vocab BERT_VOCAB
+                 [-do_eval] [-device_map DEVICE_MAP]
+                 [-tag_padding TAG_PADDING] [-best_fit]
+                 [-max_epochs MAX_EPOCHS]
+                 [-early_stop_patience EARLY_STOP_PATIENCE]
+                 [-reduce_lr_patience REDUCE_LR_PATIENCE]
+                 [-reduce_lr_factor REDUCE_LR_FACTOR]
+                 [-hard_epochs HARD_EPOCHS] [-batch_size BATCH_SIZE]
+                 [-max_len MAX_LEN] [-learning_rate LEARNING_RATE]
+                 [-model_type MODEL_TYPE] [-cell_type CELL_TYPE]
+                 [-rnn_units RNN_UNITS]
+                 [-rnn_num_hidden_layers RNN_NUM_HIDDEN_LAYERS]
+                 [-cnn_filters CNN_FILTERS] [-cnn_kernel_size CNN_KERNEL_SIZE]
+                 [-cnn_blocks CNN_BLOCKS] [-dropout_rate DROPOUT_RATE]
+helper.py: error: the following arguments are required: -train_data, -bert_config, -bert_checkpoint, -bert_vocab
 ```
+**Run `python keras_bert_ner/helper.py train --help` for more details.**
 
-### Some Tips
+> **Some Tips**
 
-If your **pretrained language model** are **ALBERTs(Large/Base/Tiny)**, remember to add parameter `-albert`.  
+If your pretrained language model are **ALBERT, do remember to add parameter `-albert`**.  
 
-If you **do not want to add any downstream layers**, like BiLSTM/BiGRU/IDCNN, simply add parameter `-crf_only`. 
+If you want to **get the best training results**, you need to **assign parameters for early-stopping and reduce-learning-rate**(see in train configs), and **do not forget to add parameter `-best_fit`**.
 
-If you want to **get the best training results**, you need to **assign parameters for early-stopping and reduce-learning-rate**(see in Train Configs), and do not forget to add parameter `-best_fit`.
-
-### Example
+> **Example**
 
 Examples can be seen in `./examples/train_example`. Simply run `bash run_train.sh` to start training. 
 
-Here are two templates for `rnn` models and `cnn` models:
+Here are two templates for **CNN** downstreams and **RNN** downstreams:
 
-**rnns**
-
-```bash
-PRETRAINED_LM_DIR="/home1/liushaoweihua/pretrained_lm/albert_tiny_250k" # your pretrained language model path
-DATA_DIR="../data" # your train/dev data path
-OUTPUT_DIR="../models" # where to store the NER model
-
-python run_train.py \
-    -train_data=${DATA_DIR}/train.txt \
-    -dev_data=${DATA_DIR}/dev.txt \
-    -save_path=${OUTPUT_DIR} \
-    -bert_config=${PRETRAINED_LM_DIR}/albert_config_tiny.json \
-    -bert_checkpoint=${PRETRAINED_LM_DIR}/albert_model.ckpt \
-    -bert_vocab=${PRETRAINED_LM_DIR}/vocab.txt \
-    -device_map="0" \
-    -best_fit \
-    -max_epochs=256 \
-    -early_stop_patience=5 \
-    -reduce_lr_patience=3 \
-    -reduce_lr_factor=0.5 \
-    -batch_size=64 \
-    -max_len=512 \
-    -learning_rate=5e-6 \
-    -model_type="rnn" \  # rnn model
-    -cell_type="bilstm" \ # rnn cell: can be "bilstm" or "bigru"
-    -rnn_units=128 \
-    -rnn_layers=1 \
-    -dropout_rate=0.1 \
-    -learning_rate=5e-5 \
-    -albert
-```
-
-**cnns**
+**CNN**
 
 ```bash
-PRETRAINED_LM_DIR="/home1/liushaoweihua/pretrained_lm/albert_tiny_250k" # your pretrained language model path
-DATA_DIR="../data" # your train/dev data path
-OUTPUT_DIR="../models" # where to store the NER model
+PRETRAINED_LM_DIR="/home/liushaoweihua/pretrained_lm/albert_small_chinese"
+DATA_DIR="../data"
+OUTPUT_DIR="../models"
 
 python run_train.py \
-    -train_data=${DATA_DIR}/train.txt \
-    -dev_data=${DATA_DIR}/dev.txt \
-    -save_path=${OUTPUT_DIR} \
-    -bert_config=${PRETRAINED_LM_DIR}/albert_config_tiny.json \
-    -bert_checkpoint=${PRETRAINED_LM_DIR}/albert_model.ckpt \
-    -bert_vocab=${PRETRAINED_LM_DIR}/vocab.txt \
-    -device_map="0" \
+    -train_data ${DATA_DIR}/train.txt \
+    -dev_data ${DATA_DIR}/dev.txt \
+    -save_path ${OUTPUT_DIR} \
+    -bert_config ${PRETRAINED_LM_DIR}/albert_config.json \
+    -bert_checkpoint ${PRETRAINED_LM_DIR}/albert_model.ckpt \
+    -bert_vocab ${PRETRAINED_LM_DIR}/vocab.txt \
+    -albert \
+    -do_eval \
+    -device_map "0" \
+    -tag_padding "X" \
     -best_fit \
-    -max_epochs=256 \
-    -early_stop_patience=5 \
-    -reduce_lr_patience=3 \
-    -reduce_lr_factor=0.5 \
-    -batch_size=64 \
-    -max_len=512 \
-    -learning_rate=5e-6 \
-    -model_type="cnn" \  # cnn model
-    -cell_type="idcnn" \ # cnn cell: can be idcnn
-    -cnn_filters=128 \
-    -cnn_kernel_size=3 \
-    -cnn_blocks=4 \
-    -dropout_rate=0.1 \
-    -learning_rate=5e-5 \
-    -albert
+    -max_epochs 256 \
+    -early_stop_patience 5 \
+    -reduce_lr_patience 3 \
+    -reduce_lr_factor 0.5 \
+    -batch_size 64 \
+    -max_len 64 \
+    -learning_rate 5e-6 \
+    -model_type "cnn" \
+    -cnn_filters 128 \
+    -cnn_kernel_size 3 \
+    -cnn_blocks 4 \
+    -dropout_rate 0.0 \
+    -learning_rate 5e-5
 ```
-### Logs in Training Phase
 
-![img](http://gitlab.yiwise.local/liushaoweihua/Keras-Bert-Ner/raw/master/pictures/train_1.jpg)
+**RNN**
 
-![img](http://gitlab.yiwise.local/liushaoweihua/Keras-Bert-Ner/raw/master/pictures/train_2.jpg)
+```bash
+PRETRAINED_LM_DIR="/home/liushaoweihua/pretrained_lm/albert_small_chinese"
+DATA_DIR="../data"
+OUTPUT_DIR="../models"
 
-**Both tag accuracy and sentence accuracy are printed during the training phase.** 
+python run_train.py \
+    -train_data ${DATA_DIR}/train.txt \
+    -dev_data ${DATA_DIR}/dev.txt \
+    -save_path ${OUTPUT_DIR} \
+    -bert_config ${PRETRAINED_LM_DIR}/albert_config.json \
+    -bert_checkpoint ${PRETRAINED_LM_DIR}/albert_model.ckpt \
+    -bert_vocab ${PRETRAINED_LM_DIR}/vocab.txt \
+    -albert \
+    -do_eval \
+    -device_map "0" \
+    -tag_padding "X" \
+    -best_fit \
+    -max_epochs 256 \
+    -early_stop_patience 5 \
+    -reduce_lr_patience 3 \
+    -reduce_lr_factor 0.5 \
+    -batch_size 64 \
+    -max_len 64 \
+    -learning_rate 5e-6 \
+    -model_type "cnn" \
+    -cell_type "lstm" \
+    -rnn_units 128 \
+    -rnn_num_hidden_layers 2 \
+    -dropout_rate 0.0 \
+    -learning_rate 5e-5
+```
 
-## Testing
+**Tag/sentence accuracy can be seen during the training phase and will be saved in the assigned `save_path`.** 
 
-### Data Format
+## Test Phase
+
+> **Data Format**
 
 ```json
 [
@@ -242,100 +171,58 @@ python run_train.py \
 ]
 ```
 
-See in `./examples/data/test.txt`, data source: [互联网金融新实体发现](https://www.datafountain.cn/competitions/361)
+> **Parameters**
 
-### Parameters
-
-Simply run `python keras_bert_ner/utils/help.py --help` to see the relevant parameters. Where you will see as follows: 
+Run `python keras_bert_ner/helper.py test` or `python keras_bert_ner/helper.py predict`for quick browse.
 
 ```bash
-(nlp) liushaoweihua@ai-server-6:~/jupyterlab/Keras-Bert-Ner$ python keras_bert_ner/utils/help.py --help
-usage: help.py [-h] -test_data TEST_DATA [-max_len MAX_LEN] -model_path
-               MODEL_PATH -model_name MODEL_NAME [-output_path OUTPUT_PATH]
-               -bert_vocab BERT_VOCAB [-device_map DEVICE_MAP]
+(nlp) liushaoweihua@ai-server-8:~/projects/Ner/tools/Keras-Bert-Ner$ python keras_bert_ner/helper.py test
+usage: helper.py [-h] -test_data TEST_DATA -model_configs MODEL_CONFIGS
+                 [-output_path OUTPUT_PATH] [-device_map DEVICE_MAP]
+helper.py: error: the following arguments are required: -test_data, -model_configs
 ```
+**Run `python keras_bert_ner/helper.py test --help` or `python keras_bert_ner/helper.py predict --help` for more details.**
 
-More precisely: 
+> **Example**
 
-```bash
-Data File Paths:
-  Config the train/dev/test file paths
-  -test_data TEST_DATA                       (REQUIRED) Test data path
-  -max_len MAX_LEN                           (OPTIONAL) Max sequence length. Default is 64
+Examples can be seen in `./examples/test_example`. Simply run `bash run_test.sh` to start testing. 
 
 
-Model Output Paths:
-  Config the model paths
-  -model_path MODEL_PATH                     (REQUIRED) Model path
-  -model_name MODEL_NAME                     (REQUIRED) Model name
+## Deploy Phase
 
+> **Example**
 
-Output Paths:
-  Config the output paths
-  -output_path OUTPUT_PATH                   (OPTIONAL) Output file paths
+Examples can be seen in `./examples/deploy_example`. Simply run `bash run_deploy.sh` to start deploying an API. 
 
-
-BERT File paths:
-  Config the vocab of a pretrained or fine-tuned BERT model
-  -bert_vocab BERT_VOCAB                     (REQUIRED) vocab.txt
-
-
-Action Configs:
-  Config the actions during running
-  -device_map DEVICE_MAP                     (OPTIONAL) Use CPU/GPU to train. If use CPU, then 'cpu'. 
-                                             If use GPU, then assign the devices, such as '0'. Default 
-                                             is 'cpu'
-```
-
-### Example
-
-Examples can be seen in `./examples/test_example`. Simply run `bash run_test.sh` to start testing.
-
-### Logs in Testing Phase
-
-![img](http://gitlab.yiwise.local/liushaoweihua/Keras-Bert-Ner/raw/master/pictures/test.jpg)
-
-## Deploying
-
-### Example
-
-Examples can be seen in `./examples/deploy_example`. 
-
-Simply run `bash run_deploy.sh` to start deploying an API. 
-
-Then run the file `usage.ipynb` or type `your_ip:2601/?s=your_text` in browser to see the result.
-
-### Performance
-
-**Max Sequence Length: 512**
-
-|                     | RoBERTa | ALBERT-Tiny |
-| :-----------------: | :-----: | :---------: |
-|  Memory Usage (G)   |  3.72   |    0.89     |
-| Inference Time (ms) |   480   |     300     |
-
-### Logs in Deploying Phase
-
-![img](http://gitlab.yiwise.local/liushaoweihua/Keras-Bert-Ner/raw/master/pictures/deploy_1.jpg)
-
-![img](http://gitlab.yiwise.local/liushaoweihua/Keras-Bert-Ner/raw/master/pictures/deploy_2.jpg)
+Then run `python query.py "时空周转公众注册，当天秒下时空周转是一款非常靠谱的小额现金快捷贷款平台。"` to get the entities.
 
 ## Some Chinese Pretrained Language Model
 
-BERT_ZH(Google): https://github.com/google-research/bert
+> **BERT**
+* [Google_bert](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)
+* [HIT_bert_wwm_ext](https://storage.googleapis.com/chineseglue/pretrain_models/chinese_wwm_ext_L-12_H-768_A-12.zip)
 
-BERT_ZH_wwm/RoBERTa_ZH_wwm(HFL，哈工大讯飞联合实验室): https://github.com/ymcui/Chinese-BERT-wwm
+> **ALBERT**
+* [Google_albert_base](https://storage.googleapis.com/albert_models/albert_base_zh.tar.gz)
+* [Google_albert_large](https://storage.googleapis.com/albert_models/albert_large_zh.tar.gz)
+* [Google_albert_xlarge](https://storage.googleapis.com/albert_models/albert_xlarge_zh.tar.gz)
+* [Google_albert_xxlarge](https://storage.googleapis.com/albert_models/albert_xxlarge_zh.tar.gz)
+* [Xuliang_albert_xlarge](https://storage.googleapis.com/albert_zh/albert_xlarge_zh_177k.zip)
+* [Xuliang_albert_large](https://storage.googleapis.com/albert_zh/albert_large_zh.zip)
+* [Xuliang_albert_base](https://storage.googleapis.com/albert_zh/albert_base_zh.zip)
+* [Xuliang_albert_base_ext](https://storage.googleapis.com/albert_zh/albert_base_zh_additional_36k_steps.zip)
+* [Xuliang_albert_small](https://storage.googleapis.com/albert_zh/albert_small_zh_google.zip)
+* [Xuliang_albert_tiny](https://storage.googleapis.com/albert_zh/albert_tiny_zh_google.zip)
 
-RoBERTa_ZH(实在科技，BrightMart): https://github.com/brightmart/roberta_zh
-
-ALBERT_ZH(实在科技，BrightMart): https://github.com/brightmart/albert_zh
+> **Roberta**
+* [roberta](https://storage.googleapis.com/chineseglue/pretrain_models/roeberta_zh_L-24_H-1024_A-16.zip)
+* [roberta_wwm_ext](https://storage.googleapis.com/chineseglue/pretrain_models/chinese_roberta_wwm_ext_L-12_H-768_A-12.zip)
+* [roberta_wwm_ext_large](https://storage.googleapis.com/chineseglue/pretrain_models/chinese_roberta_wwm_large_ext_L-24_H-1024_A-16.zip)
 
 ## Reference
-
-The architecture of this repository refers to macanv's work: [BERT-BiLSTM-CRF-NER](https://github.com/macanv/BERT-BiLSTM-CRF-NER). 
-
-The most important component of keras_bert_ner refers to bojone's work: [bert4keras](https://github.com/bojone/bert4keras).
-
-The pretained Language Model [ALBERT-Tiny](https://storage.googleapis.com/albert_zh/albert_tiny.zip), work of [BrightMart](https://github.com/brightmart), makes it possible for NER tasks with short inference time and relatively higher accuracy.
+* The origin architecture of this repository refers to macanv's work: [BERT-BiLSTM-CRF-NER](https://github.com/macanv/BERT-BiLSTM-CRF-NER). 
+* The most important component of keras_bert_ner refers to bojone's work: [bert4keras](https://github.com/bojone/bert4keras).
+* The work of [albert_zh](https://github.com/brightmart/albert_zh), makes it possible for Chinese NER tasks with short inference time and relatively higher accuracy.
+* [BERT](https://github.com/google-research/bert), [ALBERT](https://github.com/google-research/albert), [RoBERTa](https://github.com/pytorch/fairseq/tree/master/examples/roberta).
 
 Thanks for all these wonderful works! 
