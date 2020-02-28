@@ -88,76 +88,77 @@ def parse(text):
         decode_res = [app.model_configs["id_to_tag"][item] for item in decode_res[0]
                       if app.model_configs["id_to_tag"][item] != app.model_configs["args"].tag_padding]
         min_len = min(app.model_configs["args"].max_len, len(text))
-        decode_res = [text[:min_len], decode_res[:min_len]]
-        decode_res = get_entities(decode_res)
+        decode_res = [text[:min_len], " ".join(decode_res[:min_len])]
+        # decode_res = get_entities(decode_res)
+        decode_res = json.dumps({"text": decode_res[0], "tags": decode_res[1]}, ensure_ascii=False, indent=4)
         return decode_res
 
 
-def get_entities(inputs):
-    text, tags = inputs
-    entities = []
-    tag = None
-    entity = ""
-    start, end = 0, 0
-    for i, text_item, tag_item in zip(range(len(text)), text, tags):
-        if tag_item.startswith("B"):
-            if tag is not None:
-                entities.append({
-                    "start": start,
-                    "end": end,
-                    "entity_name": text[start:end],
-                    "entity_type": tag})
-            start, end = i, i + 1
-            entity = text_item
-            tag = tag_item.split("-")[-1] if tag_item.split("-")[-1] != "" else "unknown"
-        elif tag_item.startswith("I"):
-            if tag_item.split("-")[-1] in ["", tag]:
-                entity += text_item
-                end = i + 1
-            else:
-                tag = None
-                entity = ""
-                start, end = i, i + 1
-        elif tag_item.startswith("S"):
-            if tag is not None:
-                entities.append({
-                    "start": start,
-                    "end": i,
-                    "entity_name": text[start:i],
-                    "entity_type": tag})
-                tag = None
-                entity = ""
-                start, end = i, i + 1
-            else:
-                start, end = i, i + 1
-                tag = tag_item.split("-")[-1] if tag_item.split("-")[-1] != "" else "unknown"
-                entities.append({
-                    "start": start,
-                    "end": end,
-                    "entity_name": text[start:end],
-                    "entity_type": tag})
-                tag = None
-                entity = ""
-        else:
-            if tag is not None:
-                entities.append({
-                    "start": start,
-                    "end": i,
-                    "entity_name": text[start:i],
-                    "entity_type": tag})
-                tag = None
-                entity = ""
-                start, end = i, i + 1
-    if start != i and tag is not None:
-        entities.append({
-            "start": start,
-            "end": i,
-            "entity_name": text[start:i],
-            "entity_type": tag})
-    if entities == []:
-        return json.dumps({"text": text, "entities": None}, ensure_ascii=False, indent=4)
-    else:
-        return json.dumps({"text": text, "entities": entities}, ensure_ascii=False, indent=4)
+# def get_entities(inputs):
+#     text, tags = inputs
+#     entities = []
+#     tag = None
+#     entity = ""
+#     start, end = 0, 0
+#     for i, text_item, tag_item in zip(range(len(text)), text, tags):
+#         if tag_item.startswith("B"):
+#             if tag is not None:
+#                 entities.append({
+#                     "start": start,
+#                     "end": end,
+#                     "entity_name": text[start:end],
+#                     "entity_type": tag})
+#             start, end = i, i + 1
+#             entity = text_item
+#             tag = tag_item.split("-")[-1] if tag_item.split("-")[-1] != "" else "unknown"
+#         elif tag_item.startswith("I"):
+#             if tag_item.split("-")[-1] in ["", tag]:
+#                 entity += text_item
+#                 end = i + 1
+#             else:
+#                 tag = None
+#                 entity = ""
+#                 start, end = i, i + 1
+#         elif tag_item.startswith("S"):
+#             if tag is not None:
+#                 entities.append({
+#                     "start": start,
+#                     "end": i,
+#                     "entity_name": text[start:i],
+#                     "entity_type": tag})
+#                 tag = None
+#                 entity = ""
+#                 start, end = i, i + 1
+#             else:
+#                 start, end = i, i + 1
+#                 tag = tag_item.split("-")[-1] if tag_item.split("-")[-1] != "" else "unknown"
+#                 entities.append({
+#                     "start": start,
+#                     "end": end,
+#                     "entity_name": text[start:end],
+#                     "entity_type": tag})
+#                 tag = None
+#                 entity = ""
+#         else:
+#             if tag is not None:
+#                 entities.append({
+#                     "start": start,
+#                     "end": i,
+#                     "entity_name": text[start:i],
+#                     "entity_type": tag})
+#                 tag = None
+#                 entity = ""
+#                 start, end = i, i + 1
+#     if start != i and tag is not None:
+#         entities.append({
+#             "start": start,
+#             "end": i,
+#             "entity_name": text[start:i],
+#             "entity_type": tag})
+#     if entities == []:
+#         return json.dumps({"text": text, "entities": None}, ensure_ascii=False, indent=4)
+#     else:
+#         return json.dumps({"text": text, "entities": entities}, ensure_ascii=False, indent=4)
 
 
 def first_predict():
