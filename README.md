@@ -1,4 +1,4 @@
-English Version  |  中文版说明
+[English Version](https://github.com/liushaoweihua/keras-bert-ner/blob/master/README.md)  |  [中文版说明](https://github.com/liushaoweihua/keras-bert-ner/blob/master/README_ZH.md)
 
 # Keras-Bert-Ner
 
