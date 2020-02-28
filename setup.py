@@ -28,7 +28,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    setup_requires=["flask", "keras", "numpy", "loguru", "termcolor", "tensorflow", "keras_contrib"],
-    install_requires=["flask", "keras", "numpy", "loguru", "termcolor", "tensorflow", "keras_contrib"],
+    setup_requires=["flask", "keras", "numpy", "loguru", "requests", "termcolor", "tensorflow", "keras_contrib"],
+    install_requires=["flask", "keras", "numpy", "loguru", "requests", "termcolor", "tensorflow", "keras_contrib"],
     cmdclass={'install':Installation},
 )
