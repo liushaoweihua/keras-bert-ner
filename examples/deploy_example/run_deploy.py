@@ -14,7 +14,6 @@ import json
 import time
 import keras
 import codecs
-import requests
 import tensorflow as tf
 from loguru import logger
 from termcolor import colored
