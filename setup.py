@@ -15,7 +15,7 @@ class Installation(install):
 
 setuptools.setup(
     name="keras_bert_ner",
-    version="0.1.0",
+    version="1.0.0",
     author="liushaoweihua",
     author_email="liushaoweihua@126.com",
     long_description=long_description,
@@ -28,7 +28,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    setup_requires=["tensorflow","keras","numpy"],
-    install_requires=["tensorflow","keras","numpy"],
+    setup_requires=["flask", "keras", "numpy", "loguru", "termcolor", "tensorflow", "keras_contrib"],
+    install_requires=["flask", "keras", "numpy", "loguru", "termcolor", "tensorflow", "keras_contrib"],
     cmdclass={'install':Installation},
 )
