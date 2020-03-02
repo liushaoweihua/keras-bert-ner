@@ -6,7 +6,6 @@ from __future__ import print_function
 
 
 import os
-import json
 import codecs
 import pickle
 import numpy as np

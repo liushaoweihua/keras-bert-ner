@@ -240,4 +240,6 @@ if __name__ == "__main__":
         parser = predict_args_parser()
     elif parser_type == "deploy":
         parser = deploy_args_parser()
+    else:
+        raise ValueError("Parser type should be 'train', 'test', 'predict' or 'deploy'")
     parser.parse_args()

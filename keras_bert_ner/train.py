@@ -12,7 +12,6 @@ import keras
 import codecs
 import pickle
 import numpy as np
-from .utils.tokenizer import Tokenizer
 from .utils.processor import Processor
 from .utils.models import NerCnnModel, NerRnnModel
 from .utils.callbacks import NerCallbacks
