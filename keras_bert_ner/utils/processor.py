@@ -36,12 +36,13 @@ class Processor:
         tags = set()
         for item in self.data:
             for tag in item[1].split(" "):
-                if entity_type != "O":
+                if len(tag) == 1:
+                    tags.add(tag)
+                else:
+                    entity_type = tag.split("-")[-1]
                     tags.add("B-%s" % entity_type)
                     tags.add("I-%s" % entity_type)
                     tags.add("S-%s" % entity_type)
-                else:
-                    tags.add(tag)
         tags = list(tags)
         self.tag_to_id = {tags[i]:i for i in range(len(tags))}
         if self.tag_padding not in self.tag_to_id:
@@ -55,7 +56,7 @@ class Processor:
         """适配于Bert/Albert的训练数据生成
         """
         data = self._load_data(path)
-        data = np.random.shuffle(data)
+        np.random.shuffle(data)
         origin_texts, origin_tags = np.stack(data, axis=-1)
         tokens, segs = [], []
         for text in origin_texts:
