@@ -1,17 +1,30 @@
-import setuptools
+# -*- coding: utf-8 -*-
 
+"""
+@Author: Shaoweihua.Liu
+@Contact: liushaoweihua@126.com
+@Site: github.com/liushaoweihua
+@File: setup.py
+@Time: 2020/3/3 10:37 AM
+"""
+
+
+import setuptools
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 from subprocess import call
 
+
 with open("README.md","r") as f:
     long_description = f.read()
+
 
 class Installation(install):
     def run(self):
         call(["pip install -r requirements.txt --no-clean"], shell=True)
         install.run(self)
+
 
 setuptools.setup(
     name="keras_bert_ner",
@@ -30,5 +43,4 @@ setuptools.setup(
     ],
     setup_requires=["flask", "keras", "numpy", "loguru", "requests", "termcolor", "tensorflow", "keras_contrib"],
     install_requires=["flask", "keras", "numpy", "loguru", "requests", "termcolor", "tensorflow", "keras_contrib"],
-    cmdclass={'install':Installation},
-)
+    cmdclass={'install':Installation})
