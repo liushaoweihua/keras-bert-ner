@@ -26,8 +26,9 @@ Keras solution of **Chinese NER task** using **BiLSTM-CRF/BiGRU-CRF/IDCNN-CRF** 
 * keras == 2.3.1
 * numpy == 1.18.1
 * loguru == 0.4.1
+* requests == 2.22.0
 * termcolor == 1.1.0
-* tensorflow == 1.13.1
+* tensorflow == 1.15.2
 * keras_contrib == 2.0.8
 
 ## Train Phase
