@@ -72,7 +72,8 @@ class Accuracy(Callback):
                         right_tag_numb_dict[self.id_to_tag[tag_pred]] += 1
                     total_tag_numb_dict[self.id_to_tag[tag_true]] += 1
         sentence_acc = right_sentence_numb / total_sentence_numb
-        tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] for tag in right_tag_numb_dict}
+        tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] if total_tag_numb_dict[tag] != 0 else "None"
+                   for tag in right_tag_numb_dict}
         callback_info = "*" * 30 + " Epoch " + str(epoch) + " " + "*" * 30 + "\n" \
                         + "-" * 25 + " Sentence Accuracy " + "-" * 25 + "\n" \
                         + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n" \
