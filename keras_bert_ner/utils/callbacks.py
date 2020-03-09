@@ -55,9 +55,9 @@ class Accuracy(Callback):
         mask = np.array(1. - to_categorical(val_true, self.numb_tags)[:, :, self.mask_tag_id]) \
             if self.mask_tag_id else None
         val_pred = viterbi.decode([self.validation_data[0], self.validation_data[1]])
-        self._call_acc(val_true, val_pred, mask, epoch)
+        self._call_acc(val_true, val_pred, mask, epoch, logs)
 
-    def _call_acc(self, val_true, val_pred, mask, epoch):
+    def _call_acc(self, val_true, val_pred, mask, epoch, logs):
         total_sentence_numb = val_true.shape[0]
         right_sentence_numb = 0
         total_tag_numb_dict = {tag: 0 for tag in self.id_to_tag.values() if tag != self.mask_tag}
@@ -83,8 +83,12 @@ class Accuracy(Callback):
         sentence_acc = right_sentence_numb / total_sentence_numb
         tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] if total_tag_numb_dict[tag] != 0 else "None"
                    for tag in right_tag_numb_dict}
-        callback_info = "*" * 30 + " Epoch " + str(epoch) + " " + "*" * 30 + "\n" \
-                        + "-" * 25 + " Sentence Accuracy " + "-" * 25 + "\n" \
+        callback_info = "*" * 30 + " Epoch " + str(epoch) + " " + "*" * 30 + "\n"
+        callback_info += "Train Loss" + "\t" * 2 + str(logs.get("loss")) + "\n" \
+                         + "Val Loss" + "\t" * 2 + str(logs.get("val_loss")) + "\n" \
+                         + "Train Acc" + "\t" * 2 + str(logs.get("crf_accuracy")) + "\n" \
+                         + "Val Acc" + "\t" * 2 + str(logs.get("val_crf_accuracy")) + "\n"
+        callback_info += "-" * 25 + " Sentence Accuracy " + "-" * 25 + "\n" \
                         + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n" \
                         + "\t" * 2 + str(right_sentence_numb) + "\t" * 2 + str(total_sentence_numb) + "\t" * 2 + str(sentence_acc) + "\n" \
                         + "-" * 28 + " Tag Accuracy " + "-" * 27 + "\n" \
@@ -94,6 +98,7 @@ class Accuracy(Callback):
                           + str(right_tag_numb_dict[tag]) + "\t" * 2 \
                           + str(total_tag_numb_dict[tag]) + "\t" * 2 \
                           + str(tag_acc[tag]) + "\n"
+        callback_info += "\n"
         print(callback_info)
         if self.save_path is not None:
             with codecs.open(self.save_path, "a", encoding="utf-8") as f:
