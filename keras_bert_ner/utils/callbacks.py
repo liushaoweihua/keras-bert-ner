@@ -85,9 +85,9 @@ class Accuracy(Callback):
                    for tag in right_tag_numb_dict}
         callback_info = "*" * 30 + " Epoch " + str(epoch) + " " + "*" * 30 + "\n"
         callback_info += "Train Loss" + "\t" * 2 + str(logs.get("loss")) + "\n" \
-                         + "Val Loss" + "\t" * 2 + str(logs.get("val_loss")) + "\n" \
+                         + "Valid Loss" + "\t" * 2 + str(logs.get("val_loss")) + "\n" \
                          + "Train Acc" + "\t" * 2 + str(logs.get("crf_accuracy")) + "\n" \
-                         + "Val Acc" + "\t" * 2 + str(logs.get("val_crf_accuracy")) + "\n"
+                         + "Valid Acc" + "\t" * 2 + str(logs.get("val_crf_accuracy")) + "\n"
         callback_info += "-" * 25 + " Sentence Accuracy " + "-" * 25 + "\n" \
                         + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n" \
                         + "\t" * 2 + str(right_sentence_numb) + "\t" * 2 + str(total_sentence_numb) + "\t" * 2 + str(sentence_acc) + "\n" \
