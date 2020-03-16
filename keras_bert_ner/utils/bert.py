@@ -25,7 +25,6 @@ import keras
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
-from functools import partial
 from keras import initializers, activations
 from keras.layers import *
 from keras.models import Model
